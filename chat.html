@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sika AI Financial Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sika AI Financial Assistant</h1>
+    <textarea id="userMessage" placeholder="Type your financial query here..."></textarea>
+    <br>
+    <button id="sendMessage">Ask Sika</button>
+    <div id="response" class="response" style="display: none;"></div>
+
+    <script>
+        document.getElementById('sendMessage').addEventListener('click', async () => {
+            const userMessage = document.getElementById('userMessage').value;
+            const responseDiv = document.getElementById('response');
+
+            if (!userMessage.trim()) {
+                alert("Please enter a message.");
+                return;
+            }
+
+            // Show loading state
+            responseDiv.style.display = "block";
+            responseDiv.textContent = "Sika is thinking...";
+
+            try {
+                // Send the user message to the backend
+                const response = await fetch('https://amasika-38ffa20883a1.herokuapp.com/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userMessage })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch response from Sika.");
+                }
+
+                const data = await response.json();
+                responseDiv.textContent = data.reply;
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
